@@ -1,5 +1,18 @@
+/* General page background and font */
+body {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
 .App {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
 }
 
 .App-logo {
@@ -34,5 +47,141 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Booking form styling */
+form {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
+  padding: 24px 32px;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 340px;
+  margin: 0 auto;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+input {
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #bdbdbd;
+  border-radius: 4px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+input:focus {
+  border: 1.5px solid #1976d2;
+}
+
+button {
+  padding: 10px;
+  font-size: 1rem;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background-color: #1565c0;
+}
+
+.error-message {
+  color: #e53935;
+  font-weight: bold;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Booking cards styling */
+.booking-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
+  padding: 20px 24px;
+  margin: 16px 0;
+  width: 340px;
+  text-align: left;
+  transition: box-shadow 0.2s;
+  position: relative;
+  list-style: none;
+}
+
+.booking-card:hover {
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.15), 0 2px 8px rgba(0,0,0,0.10);
+}
+
+.booking-card button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #e53935;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.booking-card button:hover {
+  background: #b71c1c;
+}
+
+.booking-card div {
+  margin-bottom: 6px;
+  font-size: 1.05rem;
+}
+
+/* List styling */
+ul {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  list-style: none;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 40px;
+  justify-content: center;
+}
+
+/* Responsive for mobile */
+@media (max-width: 500px) {
+  .App, form, .booking-card {
+    width: 98vw;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  form, .booking-card {
+    padding: 12px 8px;
+  }
+}
+
+
+@media (max-width: 700px) {
+  ul {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
   }
 }
