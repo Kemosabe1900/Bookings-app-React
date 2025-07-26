@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import BookingForm from './BookingFrom';
 import './App.css';
 
