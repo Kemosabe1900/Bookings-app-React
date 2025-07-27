@@ -1,7 +1,10 @@
 import React from 'react';
 import './App.css';
 
-function BookingList({ bookings, onDelete }) {
+function BookingList({ bookings = [], onDelete, onEdit}) {
+
+    // if(!Array.isArray(bookings))bookings = [];
+
     return (
         <ul>
             {bookings.map((booking) => (
@@ -9,6 +12,7 @@ function BookingList({ bookings, onDelete }) {
                     <div><strong>Name:</strong> {booking.name}</div>
                     <div><strong>Date:</strong> {booking.date}</div>
                     <div><strong>Time:</strong> {booking.time}</div>
+                    <button onClick={() => onEdit(booking)}>Edit</button>
                     <button onClick={() => onDelete(booking.id)}>Delete</button>
                 </li>
             ))}

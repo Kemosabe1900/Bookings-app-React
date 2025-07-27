@@ -1,9 +1,26 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useReducer, useEffect, useState } from 'react';
 import axios from 'axios';
 import BookingList from './BookingList';
 import './App.css';
+// import { data } from 'react-router-dom';
+
+function bookingsReducer(state, action) {
+    switch (action.type){
+        case 'SET_BOOKINGS':
+            return action.payload; 
+        case 'ADD_BOOKING':
+            return [...state, action.payload];
+        case 'DELETE_BOOKING':
+            return state.filter(booking => booking.id !== action.payload);
+        case 'UPDATE_BOOKING':
+            return state.map(booking => booking.id === action.payload.id ? action.payload : booking);
+        default:
+            return state;
+    }
+}
 
 function BookingForm() {
+    const[editingBooking,setEditingBooking] = useState(null);
     const [name, setName] = useState('');
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
@@ -11,12 +28,13 @@ function BookingForm() {
     const nameRegex = /^[A-Za-z ]{2,}$/;
     // const isFirstRender = useRef(true); 
 
-
-    const [bookings, setBookings] = useState(() =>{
-        const storedBookings = localStorage.getItem('bookings');
-        console.log('Load from localStorage: ', storedBookings);
-        return storedBookings ? JSON.parse(storedBookings) : [];
-    })
+    const [bookings, dispatch] = useReducer(bookingsReducer,
+        [],
+        () => {
+            const storedBookings = localStorage.getItem('bookings');
+            return storedBookings ? JSON.parse(storedBookings) : [];
+        }
+    );
 
 
     useEffect(() => {
@@ -27,7 +45,8 @@ function BookingForm() {
         async function fetchBookings() {
             try{
                 const response = await axios.get('http://localhost:3001/bookings');
-                setBookings(response.data);
+                dispatch({ type: 'SET_BOOKINGS', payload: response.data }); // <-- PLURAL
+                // setBookings(response.data);
             } catch (error) {
                 console.error('Error fetching bookings:', error);
             }
@@ -37,12 +56,19 @@ function BookingForm() {
 
     
 
+    function handleEdit(booking){
+        setEditingBooking(booking);
+        setName(booking.name);
+        setDate(booking.date);
+        setTime(booking.time);
+    }
+
     
     async function handleDelete(idToDelete) {
         console.log('Deleting booking with ID:', idToDelete);
         try {
         await axios.delete(`http://localhost:3001/bookings/${idToDelete}`);
-        setBookings(bookings.filter(booking => booking.id !== idToDelete));
+        dispatch({ type: 'DELETE_BOOKING', payload: idToDelete });
        } catch (error) {
          console.error('Error deleting booking:', error);
        }
@@ -64,27 +90,52 @@ function BookingForm() {
             return;
         }
         setError('');
-        const newBooking = { name, date, time };
-
-        try { 
-            const response = await axios.post('http://localhost:3001/bookings', newBooking);
-            setBookings([...bookings, response.data]); 
-            setName('');
-            setDate('');
-            setTime('');
-            setError('');
-        } catch (error) {
-            setError('Error creating booking');
-            console.error('Error creating booking:', error);
+        if(editingBooking){
+            try{
+                const updatedBooking = { 
+                    ...editingBooking,
+                    name,
+                    date, 
+                    time 
+                };
+                const response = await axios.put(
+                    `http://localhost:3001/bookings/${editingBooking.id}`,
+                    updatedBooking
+                );
+                dispatch({ type: 'UPDATE_BOOKING', payload: response.data });
+                setEditingBooking(null);
+                setName('');
+                setDate('');
+                setTime('');
+                setError('');    
+            } catch (error) {
+                setError('Error updating booking');
+                console.error('Error updating booking:', error);
+            }
+        }else{
+            const newBooking = {name, date, time};
+            try{
+                const response = await axios.post('http://localhost:3001/bookings', newBooking);
+                dispatch({ type: 'ADD_BOOKING', payload: response.data });
+                setName('');
+                setDate('');
+                setTime('');
+                setError('');
+            } catch (error) {
+                setError('Error creating booking');
+                console.error('Error creating booking:', error);
+            }
         }
+
     }
 
 
     return (
         <div>
-            <h1>Booking Form</h1>
+           
             {error && <div style = {{color: 'red'}}>{error}</div>}
             <form onSubmit={handleSubmit}>
+                <h1>Booking Form</h1>
                 <div>
                     <label>Name: </label>
                     <input  
@@ -122,7 +173,11 @@ function BookingForm() {
                 </div>
                 
             </form>
-            <BookingList bookings= {bookings} onDelete = {handleDelete}/>
+            <BookingList 
+                bookings= {bookings} 
+                onDelete = {handleDelete} 
+                onEdit = {handleEdit}
+            />
         </div> 
        
     );
